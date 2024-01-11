@@ -1,11 +1,24 @@
-<script setup lang="ts">
-import  Hello  from "@/components/Hello.vue";
-</script>
-
 <template>
-<Hello/>
+    <Hello ref="user" /><br/>
+    <h2>标签的 ref 属性：</h2><br/>
+    <button @click="test">App组件获取属性</button><br/>
+    
 </template>
 
-<style scoped>
+<script setup lang="ts" name="App">
+import Hello from "@/components/Hello.vue";
 
-</style>
+import { ref } from "vue";
+
+let user = ref()
+function test() {
+    console.log(user.value.name)
+    console.log(user.value.age)
+
+}
+
+
+</script>
+
+
+<style scoped></style>
