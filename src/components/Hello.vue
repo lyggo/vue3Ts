@@ -6,9 +6,12 @@
         <button @click="changName">修改名字</button>
         <button @click="changAge">年龄+1</button>
         <button @click="showTel">点我查看联系⽅式</button>
-        <h2>汽⻋信息：⼀台{{ car.brand }}汽⻋，价值{{ car.price }}万</h2>
+        <h2>汽⻋信息：⼀台{{ car.brand }}汽⻋，价值{{ car.price }}万,颜色：{{ car.info.color }},规格：{{ car.info.specs }}</h2>
         <button @click="changCarPrice">升值</button>
         <button @click="changCar">换车</button>
+        <button @click="changColor">改色</button>
+        <button @click="upgradation">升级</button>
+        <button @click="upgradationAll">改全套</button>
 
         <h2>手机信息：⼀台{{ phone.name }}手机，型号{{ phone.version }}</h2>
         <button @click="changPhone">换手机</button>
@@ -29,11 +32,15 @@
             <li>性别：{{ fgender }}</li>
         </ul>
         <button @click="changfAge">年龄+1</button>
-        
+        <button @click="changfName">修改朋友名字</button>
+        <h2>亲密状态：</h2>
+        <h4>{{ marriageStatus }}</h4>
+        <button @click="changMrriageStatus">修改亲密关系</button>
+        <h2>幸运数字：</h2>
+        <h4>{{ obj.a.b.c }}</h4>
+        <button @click="changNum">修改数字</button>
 
 
-        <h5>work:{{ bairong.beijing.chaoyang.lixinghang }}</h5>
-        <h5>home:{{ home.shunyi.nanfaxin.dongyashouhang }}</h5>
 
 
 
@@ -41,14 +48,21 @@
     </div>
 </template>
 <script setup lang="ts" name="Hello">
-import { ref, reactive,toRefs,toRef } from "vue";
+import { ref, reactive, toRefs, toRef, computed, watch } from "vue";
 
 let name = ref("张三")
 let age = ref(18)
 let gender = ref("男")
 let tel = "17777784567"
 
-let car = reactive({ brand: '奔驰', price: 100 })
+let car = reactive({
+    brand: '奔驰',
+    price: 100,
+    info: {
+        color: "red",
+        specs: "low"
+    }
+})
 let phone = ref({
     version: 14,
     name: "iphone"
@@ -56,6 +70,14 @@ let phone = ref({
 })
 
 
+let obj = reactive(
+    {
+        a: {
+            b: {
+                c: 666
+            }
+        }
+    })
 
 let games = reactive([
     { id: 'ahsgdyfa01', name: '英雄联盟' },
@@ -69,30 +91,19 @@ let stars = ref([
     { id: "SSDSS3", name: "黃子韜" }
 ])
 
-let bairong = ref({
-    beijing: {
-        chaoyang: {
-            lixinghang: "bairong"
-        }
-    }
-
-})
-let home = reactive({
-    shunyi: {
-        nanfaxin: {
-            dongyashouhang: "home"
-        }
-    }
-})
-
 let friend = reactive({
-    fname:"李四",
-    fage:18,
-    fgender: "女"
-    
+    fname: "李四",
+    fage: 18,
+    fgender: "女",
+    fcar: {
+        c1: "奔驰",
+        c2: "宝马"
+
+    }
+
 })
-let {fname,fgender} = toRefs(friend)
-let fage = toRef(friend,"fage")
+let { fname, fgender } = toRefs(friend)
+let fage = toRef(friend, "fage")
 
 function changName() {
     name.value = '李四'
@@ -140,7 +151,75 @@ function changPhone() {
 }
 
 function changfAge() {
-    fage.value +=1
+    fage.value += 1
 }
+
+function changfName() {
+    fname.value = "王五"
+
+}
+
+let marriageStatus = computed({
+    get() {
+        return name.value + "❤" + fname.value
+    },
+    set(val) {
+        console.log(val)
+        name.value = val.split("❤")[0]
+        fname.value = val.split("❤")[1]
+    }
+})
+
+
+function changMrriageStatus() {
+    marriageStatus.value = "张三❤赵六"
+}
+
+const stopWatch = watch(age, (newValue, oldValue) => {
+    console.log("age 变化了", newValue, oldValue)
+    fage.value += 1
+    if (age.value > 22) {
+        stopWatch()
+    }
+})
+
+watch(car, (newValue, oldValue) => {
+    console.log("car 变化了", newValue, oldValue)
+})
+
+watch(obj, (newValue, oldValue) => {
+    console.log("obj 变化了", newValue, oldValue)
+})
+
+function changNum() {
+    obj.a.b.c += 1
+}
+watch(() => car.info, (newValue, oldValue) => {
+    console.log("car info update", newValue, oldValue)
+})
+
+watch(() => car.info.color, (newValue, oldValue) => {
+    console.log("car color info update", newValue, oldValue)
+})
+
+function changColor() {
+    car.info.color = "blue"
+
+}
+function upgradation() {
+    car.info.specs = "most"
+
+}
+function upgradationAll() {
+    car.info = {
+        color: "green",
+        specs: "low"
+    }
+}
+watch([() => car.brand, car.info], (newValue, oldValue) => {
+    console.log("car info color and specs update", newValue, oldValue)
+
+})
+
 
 </script>
